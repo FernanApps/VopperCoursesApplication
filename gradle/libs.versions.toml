@@ -16,6 +16,7 @@ kase64 = "1.1.1"
 kotlin = "2.0.0"
 lifecycle-viewmodel = "2.8.1"
 materialKolor = "1.7.0"
+media3Exoplayer = "1.3.1"
 navigationCompose = "2.7.0-alpha07"
 koin = "3.6.0-alpha3"
 koinCompose = "3.6.0-alpha3"
@@ -23,13 +24,21 @@ koinComposeMultiplatform = "1.2.0-alpha3"
 kotlinxCoroutinesSwing = "1.8.0"
 ksoup = "0.1.2"
 composeImageLoader = "1.8.1"
+vlcj = "4.7.0"
 window-size = "0.5.0"
 kotlinx-serialization = "1.6.2"
 kotlinx-datetime = "0.5.0"
+ksp = "1.9.23-1.0.19"
+sqlite = "2.5.0-alpha01"
+androidxRoom = "2.7.0-alpha01"
+
 
 
 
 [libraries]
+androidx-media3-exoplayer = { module = "androidx.media3:media3-exoplayer", version.ref = "media3Exoplayer" }
+androidx-media3-exoplayer-dash = { module = "androidx.media3:media3-exoplayer-dash", version.ref = "media3Exoplayer" }
+androidx-media3-ui = { module = "androidx.media3:media3-ui", version.ref = "media3Exoplayer" }
 kase64 = { module = "de.peilicke.sascha:kase64", version.ref = "kase64" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
@@ -52,10 +61,14 @@ kotlinx-coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-
 ksoup = { module = "com.fleeksoft.ksoup:ksoup", version.ref = "ksoup" }
 ksoup-network = { module = "com.fleeksoft.ksoup:ksoup-network", version.ref = "ksoup" }
 composeImageLoader = { module = "io.github.qdsfdhvh:image-loader", version.ref = "composeImageLoader" }
+vlcj = { module = "uk.co.caprica:vlcj", version.ref = "vlcj" }
 window-size = { module = "dev.chrisbanes.material3:material3-window-size-class-multiplatform", version.ref = "window-size" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinx-datetime" }
-
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "androidxRoom" }
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "androidxRoom" }
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+sqlite = { module = "androidx.sqlite:sqlite", version.ref = "sqlite" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -64,3 +77,5 @@ jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinx-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+room = { id = "androidx.room", version.ref = "androidxRoom" }

@@ -9,6 +9,9 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinx.serialization)
 
+    alias(libs.plugins.room)
+    id("com.google.devtools.ksp")
+
 }
 
 kotlin {
@@ -41,6 +44,11 @@ kotlin {
 
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+
+            implementation(libs.androidx.media3.exoplayer)
+            implementation(libs.androidx.media3.exoplayer.dash)
+            implementation(libs.androidx.media3.ui)
+
         }
 
         commonMain.dependencies {
@@ -68,13 +76,21 @@ kotlin {
 
             implementation(libs.kotlinx.serialization.json)
 
-            implementation(libs.kase64)
+
+            implementation(libs.androidx.room.runtime)
+            implementation(libs.sqlite.bundled)
+            implementation(libs.sqlite)
+
 
         }
         desktopMain.dependencies {
+            api(compose.preview)
             implementation(compose.desktop.currentOs)
 
             runtimeOnly(libs.kotlinx.coroutines.swing)
+
+            implementation(libs.vlcj)
+
 
         }
 
@@ -138,3 +154,6 @@ compose.resources {
     generateResClass = always
 }
 */
+room {
+    schemaDirectory("$projectDir/schemas")
+}
