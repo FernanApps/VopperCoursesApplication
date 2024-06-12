@@ -20,6 +20,8 @@ import presentation.screens.details.CourseDetailsView
 import presentation.screens.home.BottomNavigationBar
 import presentation.screens.home.ProfileView
 import presentation.screens.home.ReelsView
+import presentation.screens.player.PlayerScreen
+import presentation.videoUrlBundleKey
 
 @Composable
 fun MainScreen() {
@@ -90,7 +92,7 @@ fun NavHostMain(
                 )
             }
         ) {
-            composable(route = Screens.Courses()) {
+            composable(route = Screens.Courses()) { backStackEntry ->
                 CoursesScreen(onNavigate = {
                     navController.navigate(Screens.CourseDetails.withArgs(it))
                 })
@@ -104,9 +106,22 @@ fun NavHostMain(
                 ProfileView {
                 }
             }
-            composable(route = Screens.CourseDetails()) {
-                val keyCourse = Screens.CourseDetails.getData(courseBundleKey, it.arguments)
+            composable(route = Screens.CourseDetails()) { backStackEntry ->
+                val keyCourse = Screens.CourseDetails.getData(courseBundleKey, backStackEntry.arguments)
                 CourseDetailsView(keyCourse, onBack =  {
+                    navController.popBackStack()
+                }, navigateToPlayer = {
+                    println("pass $it")
+                    println(Screens.Player.withArgsSafe(it))
+                    navController.navigate(Screens.Player.withArgsSafe(it))
+
+                })
+            }
+
+            composable(route = Screens.Player()) { backStackEntry ->
+                println(backStackEntry.arguments?.getString(videoUrlBundleKey))
+                val videoUrl = Screens.Player.getDataSafe(videoUrlBundleKey, backStackEntry.arguments)
+                PlayerScreen(videoUrl, onBack =  {
                     navController.popBackStack()
                 })
             }

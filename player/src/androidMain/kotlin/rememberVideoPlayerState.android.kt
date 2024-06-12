@@ -3,10 +3,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.media3.ui.PlayerView
+import data.local.WatchDatabase
+import data.local.WatchDatabaseInit
+import data.local.WatchProgressRepository
+import data.local.getRoomDatabase
+
 
 @Composable
 actual fun rememberVideoPlayerState(): VideoPlayerState {
     val context = LocalContext.current
+    val repository = remember {
+        WatchProgressRepository(getRoomDatabase(WatchDatabaseInit(context).getDatabaseBuilder()).watchProgressDao())
+    }
     return remember {
         val view = PlayerView(context)
         VideoPlayerState(
@@ -18,7 +26,8 @@ actual fun rememberVideoPlayerState(): VideoPlayerState {
                     },
                     modifier = it
                 )
-            }
+            },
+            repository
         )
     }
 }

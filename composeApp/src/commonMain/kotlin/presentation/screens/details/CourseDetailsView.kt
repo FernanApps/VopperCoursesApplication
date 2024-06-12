@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import domain.model.Chapter
 import koinViewModel
 import org.jetbrains.compose.resources.stringResource
+import presentation.components.IconButtonBack
 import presentation.screens.CoursesViewModel
 import voppercourses.composeapp.generated.resources.Res
 import voppercourses.composeapp.generated.resources.chapter
@@ -36,6 +37,7 @@ import voppercourses.composeapp.generated.resources.hello
 fun CourseDetailsView(
     keyCourse: String,
     onBack: () -> Unit,
+    navigateToPlayer: (videoUrl: String) -> Unit,
     viewModel: CoursesViewModel = koinViewModel()
 ) {
     val chapters by viewModel.chapters.collectAsState()
@@ -52,11 +54,7 @@ fun CourseDetailsView(
         //horizontalAlignment = Alignment.CenterHorizontally,
         //verticalArrangement = Arrangement.Center
     ) {
-        IconButton(onClick = {
-            onBack()
-        }) {
-            Icon(imageVector = Icons.Filled.ArrowBackIosNew, "ArrowBackIosNew")
-        }
+        IconButtonBack(onBack)
         Spacer(Modifier.size(10.dp))
         Text(
             if (chapters.isEmpty()) "" else stringResource(Res.string.chapters) + " : ${chapters.size}",
@@ -72,8 +70,8 @@ fun CourseDetailsView(
         } else {
             LazyColumn {
                 items(chapters) {
-                    ChapterItem(chapter = it) {
-
+                    ChapterItem(chapter = it) { chapter ->
+                        navigateToPlayer(chapter.link)
                     }
                 }
             }

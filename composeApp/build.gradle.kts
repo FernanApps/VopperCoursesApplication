@@ -68,7 +68,7 @@ kotlin {
 
             implementation(libs.kotlinx.serialization.json)
 
-            implementation(libs.kase64)
+            // in local utils implementation(libs.kase64)
 
             implementation(project(":player"))
 

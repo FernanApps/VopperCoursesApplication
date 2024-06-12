@@ -14,10 +14,4 @@ data class Course(
 )
 
 
-@Serializable
-data class Chapter(
-    val index: Int,
-    val link: String,
-    val soon: Boolean = false
-)
 

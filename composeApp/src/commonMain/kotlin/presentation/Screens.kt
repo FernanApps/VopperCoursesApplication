@@ -28,6 +28,8 @@ import presentation.theme.PersonFilledRounded
 import presentation.theme.PersonOutlineRounded
 import presentation.theme.SettingsFilledRounded
 import presentation.theme.SettingsOutlineRounded
+import utils.kase64.base64UrlDecoded
+import utils.kase64.base64UrlEncoded
 import utils.toJson
 import utils.toModel
 import voppercourses.composeapp.generated.resources.Res
@@ -39,6 +41,7 @@ import voppercourses.composeapp.generated.resources.settings
 internal val bottomNavItems = listOf(Screens.Courses, Screens.Profile, Screens.Setting)
 
 const val courseBundleKey = "courseBundleKey"
+const val videoUrlBundleKey = "videoUrlBundleKey"
 
 enum class Screens(
     private val args: List<String>? = null,
@@ -53,6 +56,8 @@ enum class Screens(
     Setting(title = Res.string.settings, selectedIcon = Icons.SettingsFilledRounded, unselectedIcon = Icons.SettingsOutlineRounded),
 
     CourseDetails(args = listOf(courseBundleKey)),
+    Player(args = listOf(videoUrlBundleKey)),
+
 
     /*
      <string name="courses">Courses</string>
@@ -84,9 +89,12 @@ enum class Screens(
         return name + destination
     }
     inline fun <reified T: Any> withObject(model: T) = withArgs(_pass<T>(model))
+    fun withArgsSafe(vararg arg: String) = withArgs(*_passSafe(*arg))
     //inline fun <reified T: Any> withObject(key: String, model: T) = withArgs(key, _pass<T>(model))
 
     inline fun <reified T> _pass(object1: T) = object1.toJson().encodeBase64()
+    fun _passSafe(vararg arg: String) = arg.map {  it.base64UrlEncoded }.toTypedArray()
+
 
 
     inline fun <reified T> getObject(key: String, bundle: Bundle?) =
@@ -94,6 +102,9 @@ enum class Screens(
 
     fun getData(key: String, bundle: Bundle?) =
         bundle!!.getString(key)!!
+
+    fun getDataSafe(key: String, bundle: Bundle?) =
+        getData(key, bundle).base64UrlDecoded
 
 
 
