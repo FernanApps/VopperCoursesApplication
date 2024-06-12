@@ -92,7 +92,8 @@ enum class Screens(
     inline fun <reified T> getObject(key: String, bundle: Bundle?) =
         bundle!!.getString(key)!!.decodeBase64String().toModel<T>()
 
-
+    fun getData(key: String, bundle: Bundle?) =
+        bundle!!.getString(key)!!
 
 
 

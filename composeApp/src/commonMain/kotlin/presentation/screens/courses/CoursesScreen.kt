@@ -49,7 +49,7 @@ import voppercourses.composeapp.generated.resources.hello
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CoursesScreen(onNavigate: (course: Course) -> Unit, viewModel: CoursesViewModel = koinViewModel()) {
+fun CoursesScreen(onNavigate: (keyCourse: String) -> Unit, viewModel: CoursesViewModel = koinViewModel()) {
 
     val courses by viewModel.courses.collectAsState()
     val text by viewModel.searchText.collectAsState()
@@ -129,8 +129,8 @@ fun CoursesScreen(onNavigate: (course: Course) -> Unit, viewModel: CoursesViewMo
 }
 
 @Composable
-fun CourseItem(modifier: Modifier = Modifier, course: Course, onClick: (Course) -> Unit) {
-    OutlinedCard(modifier = modifier.fillMaxWidth(), onClick = { onClick(course) }) {
+fun CourseItem(modifier: Modifier = Modifier, course: Course, onClick: (String) -> Unit) {
+    OutlinedCard(modifier = modifier.fillMaxWidth(), onClick = { onClick(course.key) }) {
         Column {
             val painter = rememberImagePainter(course.image)
             Image(

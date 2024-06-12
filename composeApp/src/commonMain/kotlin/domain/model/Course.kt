@@ -5,13 +5,19 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class Course(
     val title: String,
-    val path: String,
-    val image: String
+    //val path: String,
+    val image: String,
+
+    val key: String,
+    val enabled: Int = -1,
+    val total: Int  = -1
 )
+
 
 @Serializable
 data class Chapter(
-    val title: String,
+    val index: Int,
     val link: String,
+    val soon: Boolean = false
 )
 

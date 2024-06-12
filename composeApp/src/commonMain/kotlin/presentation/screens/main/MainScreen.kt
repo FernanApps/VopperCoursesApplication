@@ -8,13 +8,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import domain.model.Course
 import presentation.Screens
 import presentation.courseBundleKey
 import presentation.screens.courses.CoursesScreen
@@ -94,7 +92,7 @@ fun NavHostMain(
         ) {
             composable(route = Screens.Courses()) {
                 CoursesScreen(onNavigate = {
-                    navController.navigate(Screens.CourseDetails.withObject(it))
+                    navController.navigate(Screens.CourseDetails.withArgs(it))
                 })
 
             }
@@ -107,10 +105,10 @@ fun NavHostMain(
                 }
             }
             composable(route = Screens.CourseDetails()) {
-                val course = Screens.CourseDetails.getObject<Course>(courseBundleKey, it.arguments)
-                CourseDetailsView(course) {
+                val keyCourse = Screens.CourseDetails.getData(courseBundleKey, it.arguments)
+                CourseDetailsView(keyCourse, onBack =  {
                     navController.popBackStack()
-                }
+                })
             }
         }
     }

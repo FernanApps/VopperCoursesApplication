@@ -20,6 +20,10 @@ class CoursesViewModel(
     private val _courses = MutableStateFlow(emptyList<Course>())
     val courses = _courses.asStateFlow()
 
+    private val _currentCourse = MutableStateFlow<Course?>(null)
+    val currentCourse = _currentCourse.asStateFlow()
+
+
     private val _chapters = MutableStateFlow(emptyList<Chapter>())
     val chapters = _chapters.asStateFlow()
 
@@ -41,13 +45,26 @@ class CoursesViewModel(
         _searchText.value = newText
     }
 
+    fun setCurrentCourse(keyCourse: String){
+        _currentCourse.value = _courses.value.find { it.key == keyCourse }
+    }
 
 
 
-    private fun getChapters(){
-        viewModelScope.launch {
-            _chapters.value = getChaptersUseCase()
+
+    fun getChapters(){
+        if(_currentCourse.value != null){
+            viewModelScope.launch {
+                _chapters.value = getChaptersUseCase.invoke(
+                    keyCourse = _currentCourse.value!!.key,
+                    enabled = _currentCourse.value!!.enabled,
+                    total = _currentCourse.value!!.total
+                )
+            }
+        } else {
+            _chapters.value = emptyList()
         }
+
     }
 
 }

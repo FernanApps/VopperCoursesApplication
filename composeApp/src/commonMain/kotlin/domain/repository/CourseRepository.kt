@@ -5,5 +5,5 @@ import domain.model.Course
 
 interface CourseRepository{
     suspend fun getCourses(): List<Course>
-    suspend fun getChapters(): List<Chapter>
+    suspend fun getChapters(keyCourse: String, enabled: Int, total: Int): List<Chapter>
 }
