@@ -1,0 +1,1 @@
+actual fun getPlatform(): String  = "Native Lib"
