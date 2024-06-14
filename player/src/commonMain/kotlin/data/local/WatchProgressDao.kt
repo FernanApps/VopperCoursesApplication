@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface WatchProgressDao {
@@ -22,4 +23,8 @@ interface WatchProgressDao {
 
     @Query("SELECT * FROM watch_progress")
     suspend fun getAllWatchProgress(): List<WatchProgress>
+
+    @Query("SELECT * FROM watch_progress")
+    fun getAllWatchProgressAsFlow(): Flow<List<WatchProgress>>
+
 }

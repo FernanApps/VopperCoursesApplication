@@ -13,7 +13,7 @@ import data.local.getRoomDatabase
 actual fun rememberVideoPlayerState(): VideoPlayerState {
     val context = LocalContext.current
     val repository = remember {
-        WatchProgressRepository(getRoomDatabase(WatchDatabaseInit(context).getDatabaseBuilder()).watchProgressDao())
+        WatchProgressRepository(getRoomDatabase(WatchDatabaseInit(context).getDatabaseBuilder()))
     }
     return remember {
         val view = PlayerView(context)

@@ -16,7 +16,7 @@ import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer
 actual fun rememberVideoPlayerState(): VideoPlayerState {
 
     val repository = remember {
-        WatchProgressRepository(getRoomDatabase(WatchDatabaseInit().getDatabaseBuilder()).watchProgressDao())
+        WatchProgressRepository(getRoomDatabase(WatchDatabaseInit().getDatabaseBuilder()))
     }
 
 

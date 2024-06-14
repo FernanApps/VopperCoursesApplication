@@ -5,19 +5,24 @@ import androidx.lifecycle.viewModelScope
 import domain.model.Chapter
 import domain.model.Course
 import domain.use_cases.GetChaptersUseCase
+import domain.use_cases.GetChaptersWithPercentageUseCase
 import domain.use_cases.GetCoursesUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class CoursesViewModel(
     private val getCoursesUseCase: GetCoursesUseCase,
-    private val getChaptersUseCase: GetChaptersUseCase
+    private val getChaptersUseCase: GetChaptersUseCase,
+    private val getChaptersWithPercentageUseCase: GetChaptersWithPercentageUseCase
 
-): ViewModel() {
+) : ViewModel() {
 
 
     private val _courses = MutableStateFlow(emptyList<Course>())
@@ -42,30 +47,59 @@ class CoursesViewModel(
         getCourses()
     }
 
-    private fun getCourses(){
+
+    private fun getCourses() {
         viewModelScope.launch {
             _courses.value = getCoursesUseCase()
             _coursesFiltered.value = _courses.value
         }
     }
+
     fun onSearchTextChanged(newText: String) {
         _searchText.value = newText
-        val filteredList = _courses.value.filter { it.title.lowercase().contains(newText.lowercase()) }
+        val filteredList =
+            _courses.value.filter { it.title.lowercase().contains(newText.lowercase()) }
         _coursesFiltered.value = filteredList
     }
 
-    fun setCurrentCourse(keyCourse: String){
+    fun setCurrentCourse(keyCourse: String) {
         _currentCourse.value = _courses.value.find { it.key == keyCourse }
 
     }
 
+    private var jobUpdaterPercentage: Job? = null
 
 
+    fun updateChapterWithPercentage() {
+        if (_currentCourse.value != null) {
+            println("updateChapterWithPercentage")
+            jobUpdaterPercentage?.cancel()
+            jobUpdaterPercentage = viewModelScope.launch {
+                println("jobUpdaterPercentage viewModelScope launch")
 
-    fun getChapters(){
-        if(_currentCourse.value != null){
+                getChaptersWithPercentageUseCase(
+                    titleCourse = _currentCourse.value!!.title,
+                    chapters = _chapters.value
+                ).collect {
+                    println("jobUpdaterPercentage collect $it")
+                    _chapters.value = it
+                }
+            }
+        }
+
+
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        jobUpdaterPercentage?.cancel()
+    }
+
+
+    fun getChapters() {
+        if (_currentCourse.value != null) {
             viewModelScope.launch(Dispatchers.Unconfined) {
-                _chapters.value=  getChaptersUseCase(
+                _chapters.value = getChaptersUseCase(
                     keyCourse = _currentCourse.value!!.key,
                     enabled = _currentCourse.value!!.enabled,
                     total = _currentCourse.value!!.total
@@ -77,5 +111,7 @@ class CoursesViewModel(
         }
 
     }
+
+    fun createNameChapter(title: String, index: Int): String = "$title - $index"
 
 }
