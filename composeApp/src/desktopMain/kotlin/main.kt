@@ -5,10 +5,9 @@ import di.KoinInitializer
 fun main() = application {
     KoinInitializer().init()
 
-    val title = getPlatform()
     Window(
         onCloseRequest = ::exitApplication,
-        title = "VopperCourses $title",
+        title = "VopperCourses",
     ) {
         App()
     }

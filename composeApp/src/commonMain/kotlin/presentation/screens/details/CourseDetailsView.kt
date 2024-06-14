@@ -1,6 +1,7 @@
 package presentation.screens.details
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,6 +12,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -20,18 +22,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.materialkolor.ktx.lighten
 import domain.model.Chapter
 import koinViewModel
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.compose.ui.tooling.preview.Preview
 import presentation.components.IconButtonBack
 import presentation.screens.CoursesViewModel
 import voppercourses.composeapp.generated.resources.Res
 import voppercourses.composeapp.generated.resources.chapter
 import voppercourses.composeapp.generated.resources.chapters
 import voppercourses.composeapp.generated.resources.hello
+import voppercourses.composeapp.generated.resources.soon
 
 @Composable
 fun CourseDetailsView(
@@ -83,11 +89,29 @@ fun CourseDetailsView(
 @Composable
 fun ChapterItem(modifier: Modifier = Modifier, chapter: Chapter, onClick: (Chapter) -> Unit) {
     Card(modifier = modifier.fillMaxWidth(), onClick = {
-        onClick(chapter)
+        if (!chapter.soon) onClick(chapter)
     }) {
-        Text(
-            text = stringResource(Res.string.chapter) + " [ " + chapter.index + " ] ",
-            modifier = Modifier.padding(horizontal = 15.dp, vertical = 8.dp)
-        )
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = modifier.fillMaxWidth()) {
+            Text(
+                text = stringResource(Res.string.chapter) + " [ " + chapter.index + " ] ",
+                modifier = Modifier.padding(horizontal = 15.dp, vertical = 8.dp).weight(1f)
+            )
+            if (chapter.soon) {
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primary.lighten(),
+                        contentColor = MaterialTheme.colorScheme.background
+                    )
+                ) {
+                    Text(
+                        stringResource(Res.string.soon),
+                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
+                    )
+                }
+                Spacer(Modifier.size(5.dp))
+
+            }
+
+        }
     }
 }

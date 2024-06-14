@@ -28,7 +28,7 @@ vlcj = "4.7.0"
 window-size = "0.5.0"
 kotlinx-serialization = "1.6.2"
 kotlinx-datetime = "0.5.0"
-ksp = "1.9.23-1.0.19"
+ksp = "2.0.0-1.0.21"
 sqlite = "2.5.0-alpha01"
 androidxRoom = "2.7.0-alpha01"
 
