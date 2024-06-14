@@ -49,10 +49,10 @@ import voppercourses.composeapp.generated.resources.hello
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CoursesScreen(onNavigate: (keyCourse: String) -> Unit, viewModel: CoursesViewModel = koinViewModel()) {
+fun CoursesScreen(onNavigate: (keyCourse: String) -> Unit, viewModel: CoursesViewModel) {
 
     val courses by viewModel.courses.collectAsState()
-    val text by viewModel.searchText.collectAsState()
+    val searchText by viewModel.searchText.collectAsState()
 
 
     Column(
@@ -69,7 +69,7 @@ fun CoursesScreen(onNavigate: (keyCourse: String) -> Unit, viewModel: CoursesVie
 
         val primaryColor = MaterialTheme.colorScheme.primary
         OutlinedTextField(
-            value = text,
+            value = searchText,
             onValueChange = {
                 viewModel.onSearchTextChanged(it)
             },

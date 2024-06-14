@@ -13,8 +13,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import koinViewModel
 import presentation.Screens
 import presentation.courseBundleKey
+import presentation.screens.CoursesViewModel
 import presentation.screens.courses.CoursesScreen
 import presentation.screens.details.CourseDetailsView
 import presentation.screens.home.BottomNavigationBar
@@ -48,6 +50,8 @@ fun NavHostMain(
 ) {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentScreen = backStackEntry?.destination
+
+    val viewModel = koinViewModel<CoursesViewModel>()
 
     Scaffold(
         /*topBar = {
@@ -94,7 +98,7 @@ fun NavHostMain(
             }
         ) {
             composable(route = Screens.Courses()) { backStackEntry ->
-                CoursesScreen(onNavigate = {
+                CoursesScreen(viewModel = viewModel, onNavigate = {
                     navController.navigate(Screens.CourseDetails.withArgs(it))
                 })
 
@@ -109,7 +113,8 @@ fun NavHostMain(
             }
             composable(route = Screens.CourseDetails()) { backStackEntry ->
                 val keyCourse = Screens.CourseDetails.getData(courseBundleKey, backStackEntry.arguments)
-                CourseDetailsView(keyCourse, onBack =  {
+
+                CourseDetailsView(keyCourse,viewModel = viewModel, onBack =  {
                     navController.popBackStack()
                 }, navigateToPlayer = { videoUrl, videoTitle ->
                     navController.navigate(Screens.Player.withArgsSafe(videoUrl, videoTitle))
@@ -118,9 +123,9 @@ fun NavHostMain(
             }
 
             composable(route = Screens.Player()) { backStackEntry ->
-                println(backStackEntry.arguments?.getString(videoUrlBundleKey))
                 val videoUrl = Screens.Player.getDataSafe(videoUrlBundleKey, backStackEntry.arguments)
                 val videoTitle = Screens.Player.getDataSafe(videoTitleIdBundleKey, backStackEntry.arguments)
+
                 PlayerScreen(videoUrl, title = videoTitle, onBack =  {
                     navController.popBackStack()
                 })

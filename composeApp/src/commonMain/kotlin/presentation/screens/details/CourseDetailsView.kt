@@ -44,14 +44,13 @@ fun CourseDetailsView(
     keyCourse: String,
     onBack: () -> Unit,
     navigateToPlayer: (videoUrl: String, videoTitle: String) -> Unit,
-    viewModel: CoursesViewModel = koinViewModel()
+    viewModel: CoursesViewModel
 ) {
     val chapters by viewModel.chapters.collectAsState()
     val course by viewModel.currentCourse.collectAsState()
-    viewModel.setCurrentCourse(keyCourse)
 
-
-    LaunchedEffect(true) {
+    LaunchedEffect(keyCourse) {
+        viewModel.setCurrentCourse(keyCourse)
         viewModel.getChapters()
     }
     Column(
