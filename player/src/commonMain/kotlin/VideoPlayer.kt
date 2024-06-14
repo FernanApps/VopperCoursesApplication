@@ -33,9 +33,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
 
 
@@ -44,18 +48,10 @@ expect fun VideoPlayer(modifier: Modifier, url: String)
 
 // Other Examples https://github.com/rjuszczyk/ComposeVideoPlayer
 @Composable
-fun VideoPlayer2(modifier: Modifier, url: String, onBack: () -> Unit) {
+fun VideoPlayer2(modifier: Modifier, title: String, url: String, onBack: () -> Unit) {
     val (player, videoLayout, repository) = rememberVideoPlayerState()
 
-    DisposableEffect(player) {
-        player.apply {
-            prepare(url)
-        }
-        onDispose {
-            player.release()
-        }
-
-    }
+    val mediaId = title.replace(" ", "")
 
     val status by player.status.collectAsState(XPlayerStatus.Idle)
     val volume by player.volume.collectAsState(1f)
@@ -77,6 +73,22 @@ fun VideoPlayer2(modifier: Modifier, url: String, onBack: () -> Unit) {
         isVisibleSurface = value
     }
 
+
+    DisposableEffect(player) {
+        player.apply {
+            prepare(url)
+        }
+        onDispose {
+            coroutineScope.launch(Dispatchers.IO) {
+                repository.insertWatchProgress(mediaId = mediaId, position = currentTime)
+            }
+            player.release()
+        }
+
+    }
+
+    val hasStartedPlayback = remember { mutableStateOf(false) }
+
     LaunchedEffect(isVisibleSurface) {
         jobSurface?.cancel()
         jobSurface = coroutineScope.launch {
@@ -87,8 +99,20 @@ fun VideoPlayer2(modifier: Modifier, url: String, onBack: () -> Unit) {
         }
     }
 
-    LaunchedEffect(currentTime) {
-        println("Av $currentTime")
+
+    LaunchedEffect(status) {
+        if (status == XPlayerStatus.Playing && !hasStartedPlayback.value) {
+            val position = repository.getWatchProgress(mediaId)?.position ?: 0L
+            player.pause()
+            player.seekTo(position)
+            player.play()
+            hasStartedPlayback.value = true
+        }
+    }
+
+    val isPlay = when (status) {
+        XPlayerStatus.Playing -> true
+        else -> false
     }
 
     Box(modifier = modifier) {
@@ -98,55 +122,69 @@ fun VideoPlayer2(modifier: Modifier, url: String, onBack: () -> Unit) {
             verticalArrangement = Arrangement.SpaceAround
         ) {
 
-            IconButton(onClick = {
-                onBack()
-            }) {
-                Icon(imageVector = Icons.Filled.ArrowBackIosNew, "ArrowBackIosNew")
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.padding(horizontal = 20.dp).padding(top = 20.dp)
+            ) {
+
+                IconButton(onClick = {
+                    onBack()
+                }) {
+                    Icon(imageVector = Icons.Filled.ArrowBackIosNew, "ArrowBackIosNew")
+                }
+                Text(title, modifier = Modifier.weight(1f), textAlign = TextAlign.Center)
             }
-            videoLayout.invoke(Modifier.fillMaxWidth().weight(1f))
+
+            Box(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                contentAlignment = Alignment.Center
+            ) {
+                videoLayout.invoke(Modifier.fillMaxSize())
+                if (status == XPlayerStatus.Buffering) {
+                    CircularProgressIndicator()
+                }
+
+            }
+
+
 
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp)
+                    .padding(bottom = 20.dp)
             ) {
 
-                if (status is XPlayerStatus.Buffering) {
-                    CircularProgressIndicator()
-                } else {
 
-                    val isPlay = when (status) {
-                        XPlayerStatus.Playing -> true
-                        else -> false
-                    }
-
-                    IconButton(
-                        onClick = {
-                            when (status) {
-                                XPlayerStatus.Playing -> player.pause()
-                                else -> player.play()
-                            }
+                IconButton(
+                    enabled = status !is XPlayerStatus.Buffering,
+                    onClick = {
+                        when (status) {
+                            XPlayerStatus.Playing -> player.pause()
+                            else -> player.play()
                         }
-                    ) {
-                        Icon(
-                            imageVector = if (isPlay) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
-                            contentDescription = "skip_back",
-                        )
                     }
-                    IconButton(
-                        onClick = {
-                            if (currentTime + 10000 > duration) {
-                                player.seekTo(duration)
-                            } else {
-                                player.seekTo(currentTime + 10000)
-                            }
-                        }
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.FastForward,
-                            contentDescription = "skip_back",
-                        )
-                    }
+                ) {
+                    Icon(
+                        imageVector = if (isPlay) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                        contentDescription = "skip_back",
+                    )
                 }
+                IconButton(
+                    enabled = status !is XPlayerStatus.Buffering,
+                    onClick = {
+                        if (currentTime + 10000 > duration) {
+                            player.seekTo(duration)
+                        } else {
+                            player.seekTo(currentTime + 10000)
+                        }
+                    }
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.FastForward,
+                        contentDescription = "skip_back",
+                    )
+                }
+
 
 
                 Spacer(Modifier.size(10.dp))
@@ -155,7 +193,8 @@ fun VideoPlayer2(modifier: Modifier, url: String, onBack: () -> Unit) {
 
                 Slider(
                     value = currentTime.toFloat(),
-                    valueRange = 0f..duration.toFloat(),
+                    enabled = duration > 0,
+                    valueRange = 0f..(if(duration > 0) duration.toFloat() else 1F),
                     onValueChange = {
                         player.seekTo(it.toLong())
                     },

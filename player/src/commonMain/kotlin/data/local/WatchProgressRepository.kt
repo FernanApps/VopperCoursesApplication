@@ -18,4 +18,8 @@ class WatchProgressRepository(private val watchProgressDao: WatchProgressDao) {
     suspend fun deleteWatchProgress(mediaId: String) {
         watchProgressDao.deleteWatchProgress(mediaId)
     }
+
+    suspend fun getAllWatchProgress(): List<WatchProgress> {
+        return watchProgressDao.getAllWatchProgress()
+    }
 }

@@ -43,7 +43,7 @@ import voppercourses.composeapp.generated.resources.soon
 fun CourseDetailsView(
     keyCourse: String,
     onBack: () -> Unit,
-    navigateToPlayer: (videoUrl: String) -> Unit,
+    navigateToPlayer: (videoUrl: String, videoTitle: String) -> Unit,
     viewModel: CoursesViewModel = koinViewModel()
 ) {
     val chapters by viewModel.chapters.collectAsState()
@@ -77,7 +77,8 @@ fun CourseDetailsView(
             LazyColumn {
                 items(chapters) {
                     ChapterItem(chapter = it) { chapter ->
-                        navigateToPlayer(chapter.link)
+                        val nameChapter = course!!.title + " - " + chapter.index
+                        navigateToPlayer(chapter.link, nameChapter)
                     }
                 }
             }

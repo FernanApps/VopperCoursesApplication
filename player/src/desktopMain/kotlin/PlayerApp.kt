@@ -6,14 +6,14 @@ import androidx.compose.ui.window.application
 
 fun main() = application {
 
-    val url  = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+    val url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
     val title = getPlatform()
     Window(
         onCloseRequest = ::exitApplication,
         title = "VopperCourses $title",
     ) {
-        VideoPlayer2(modifier = Modifier.fillMaxWidth(), url){
-
+        VideoPlayer2(modifier = Modifier.fillMaxWidth(), title = "Video de Prueba", url) {
+            exitApplication()
         }
     }
 }

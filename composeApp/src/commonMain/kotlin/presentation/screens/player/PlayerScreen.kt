@@ -15,13 +15,13 @@ import presentation.components.IconButtonBack
 
 
 @Composable
-fun PlayerScreen(videoUrl: String, onBack: () -> Unit) {
-
+fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
 
     VideoPlayer2(
         modifier = Modifier.fillMaxWidth(),
+        title = title,
         url = videoUrl,
-        onBack
+        onBack = onBack
     )
 
 }

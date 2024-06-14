@@ -42,6 +42,7 @@ internal val bottomNavItems = listOf(Screens.Courses, Screens.Profile, Screens.S
 
 const val courseBundleKey = "courseBundleKey"
 const val videoUrlBundleKey = "videoUrlBundleKey"
+const val videoTitleIdBundleKey = "videoTitleIdBundleKey"
 
 enum class Screens(
     private val args: List<String>? = null,
@@ -56,7 +57,7 @@ enum class Screens(
     Setting(title = Res.string.settings, selectedIcon = Icons.SettingsFilledRounded, unselectedIcon = Icons.SettingsOutlineRounded),
 
     CourseDetails(args = listOf(courseBundleKey)),
-    Player(args = listOf(videoUrlBundleKey)),
+    Player(args = listOf(videoUrlBundleKey, videoTitleIdBundleKey)),
 
 
     /*

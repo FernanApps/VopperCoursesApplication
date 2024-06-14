@@ -14,9 +14,12 @@ interface WatchProgressDao {
     @Update
     suspend fun update(watchProgress: WatchProgress)
 
-    @Query("SELECT * FROM watch_progress WHERE mediaId = :mediaId LIMIT 1")
+    @Query("SELECT * FROM watch_progress WHERE mediaId = :mediaId")
     suspend fun getWatchProgress(mediaId: String): WatchProgress?
 
     @Query("DELETE FROM watch_progress WHERE mediaId = :mediaId")
     suspend fun deleteWatchProgress(mediaId: String)
+
+    @Query("SELECT * FROM watch_progress")
+    suspend fun getAllWatchProgress(): List<WatchProgress>
 }
