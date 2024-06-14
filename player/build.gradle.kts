@@ -77,9 +77,9 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
 
 
-            implementation(libs.androidx.room.runtime)
-            implementation(libs.sqlite.bundled)
-            implementation(libs.sqlite)
+            api(libs.androidx.room.runtime)
+            api(libs.sqlite.bundled)
+            api(libs.sqlite)
 
 
         }

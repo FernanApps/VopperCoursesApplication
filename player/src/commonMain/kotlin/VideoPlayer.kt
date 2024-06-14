@@ -51,7 +51,6 @@ expect fun VideoPlayer(modifier: Modifier, url: String)
 fun VideoPlayer2(modifier: Modifier, title: String, url: String, onBack: () -> Unit) {
     val (player, videoLayout, repository) = rememberVideoPlayerState()
 
-    val mediaId = title.replace(" ", "")
 
     val status by player.status.collectAsState(XPlayerStatus.Idle)
     val volume by player.volume.collectAsState(1f)
@@ -80,7 +79,7 @@ fun VideoPlayer2(modifier: Modifier, title: String, url: String, onBack: () -> U
         }
         onDispose {
             coroutineScope.launch(Dispatchers.IO) {
-                repository.insertWatchProgress(mediaId = mediaId, position = currentTime)
+                repository.insertWatchProgress(title = title, position = currentTime, duration = duration)
             }
             player.release()
         }
@@ -102,7 +101,7 @@ fun VideoPlayer2(modifier: Modifier, title: String, url: String, onBack: () -> U
 
     LaunchedEffect(status) {
         if (status == XPlayerStatus.Playing && !hasStartedPlayback.value) {
-            val position = repository.getWatchProgress(mediaId)?.position ?: 0L
+            val position = repository.getWatchProgress(title)?.position ?: 0L
             player.pause()
             player.seekTo(position)
             player.play()

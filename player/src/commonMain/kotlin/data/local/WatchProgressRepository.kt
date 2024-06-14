@@ -2,8 +2,8 @@ package data.local
 
 class WatchProgressRepository(private val watchProgressDao: WatchProgressDao) {
 
-    suspend fun insertWatchProgress(mediaId: String, position: Long) {
-        val watchProgress = WatchProgress(mediaId = mediaId, position = position)
+    suspend fun insertWatchProgress(title: String, position: Long, duration: Long) {
+        val watchProgress = WatchProgress(mediaId = createMediaId(title), position = position, duration = duration)
         watchProgressDao.insert(watchProgress)
     }
 
@@ -11,15 +11,18 @@ class WatchProgressRepository(private val watchProgressDao: WatchProgressDao) {
         watchProgressDao.update(watchProgress)
     }
 
-    suspend fun getWatchProgress(mediaId: String): WatchProgress? {
-        return watchProgressDao.getWatchProgress(mediaId)
+    suspend fun getWatchProgress(title: String): WatchProgress? {
+        return watchProgressDao.getWatchProgress(createMediaId(title))
     }
 
-    suspend fun deleteWatchProgress(mediaId: String) {
-        watchProgressDao.deleteWatchProgress(mediaId)
+
+    suspend fun deleteWatchProgress(title: String) {
+        watchProgressDao.deleteWatchProgress(createMediaId(title))
     }
 
     suspend fun getAllWatchProgress(): List<WatchProgress> {
         return watchProgressDao.getAllWatchProgress()
     }
+
+    fun createMediaId(data: String) = data.replace(" ", "")
 }
