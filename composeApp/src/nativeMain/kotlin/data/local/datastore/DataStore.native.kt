@@ -2,6 +2,7 @@ package data.local.datastore
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import data.local.directoryPath
 import kotlinx.atomicfu.locks.synchronized
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.coroutines.InternalCoroutinesApi
@@ -18,7 +19,8 @@ actual fun createDataStore(): DataStore<Preferences> {
     return runBlocking {
         getDataStore(producePath = {
             val documentDirectory: NSURL? = NSFileManager.defaultManager.URLForDirectory(
-                directory = NSDocumentDirectory,
+                //directory = NSDocumentDirectory,
+                directory = directoryPath,
                 inDomain = NSUserDomainMask,
                 appropriateForURL = null,
                 create = false,
