@@ -96,9 +96,9 @@ fun CourseDetailsView(
         } else {
             LazyColumn {
                 items(chapters, key = {
-                    it.index + it.percentageWatched
+                    keyCourse + it.index + it.percentageWatched
                 }) {
-                    ChapterItem(chapter = it) { chapter ->
+                    ChapterItem(chapter = it, modifier = Modifier.padding(bottom = 5.dp)) { chapter ->
                         val nameChapter = viewModel.createNameChapter(
                             title = course!!.title,
                             index = chapter.index
@@ -130,7 +130,6 @@ fun ChapterItem(modifier: Modifier = Modifier, chapter: Chapter, onClick: (Chapt
             easing = LinearOutSlowInEasing
         )
     )
-    var sizeCard by remember { mutableStateOf(IntSize.Zero) }
 
     Column {
 
@@ -138,14 +137,10 @@ fun ChapterItem(modifier: Modifier = Modifier, chapter: Chapter, onClick: (Chapt
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Card(modifier = modifier.fillMaxWidth(), onClick = {
+            Card(modifier = modifier.fillMaxWidth().height(50.dp), onClick = {
                 if (!chapter.soon) onClick(chapter)
             }) {
-                Box(
-                    modifier.fillMaxSize()
-                        .onSizeChanged { newSize ->
-                            sizeCard = newSize
-                        }) {
+                Box(Modifier.fillMaxSize()) {
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -176,7 +171,7 @@ fun ChapterItem(modifier: Modifier = Modifier, chapter: Chapter, onClick: (Chapt
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(size)
-                            .height(sizeCard.height.dp)
+                            .fillMaxHeight()
                             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.45f))
                             .animateContentSize()
                     )
@@ -184,7 +179,6 @@ fun ChapterItem(modifier: Modifier = Modifier, chapter: Chapter, onClick: (Chapt
 
             }
 
-            // for the progress of the ProgressBar
 
         }
     }

@@ -128,6 +128,8 @@ compose.desktop {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "vopper.academy.courses"
             packageVersion = "1.0.0"
+            modules("jdk.unsupported")
+
         }
     }
 }
