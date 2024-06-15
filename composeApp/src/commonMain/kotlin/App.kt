@@ -14,6 +14,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import data.local.directoryNameOfApp
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
 import org.koin.compose.KoinContext
 import org.koin.compose.currentKoinScope
@@ -25,11 +27,14 @@ import presentation.theme.LocalWindowSizeWidth
 import presentation.theme.VopperCoursesTheme
 import presentation.theme.WindowSize
 import presentation.theme.primaryColor
+import voppercourses.composeapp.generated.resources.Res
+import voppercourses.composeapp.generated.resources.app_name
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 @Preview
 fun App() {
+    directoryNameOfApp = stringResource(Res.string.app_name).replace(" ","")
 
     VopperCoursesTheme(seedColor = primaryColor, useDarkTheme = false) {
 
