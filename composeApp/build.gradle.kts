@@ -31,7 +31,7 @@ kotlin {
             isStatic = true
         }
     }
-    
+
     sourceSets {
         val desktopMain by getting
         
@@ -124,6 +124,9 @@ compose.desktop {
     application {
         mainClass = "MainKt"
 
+        buildTypes.release.proguard {
+            configurationFiles.from(files("compose-desktop.pro"))
+        }
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "vopper.academy.courses"
