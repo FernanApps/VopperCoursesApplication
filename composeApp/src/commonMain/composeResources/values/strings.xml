@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Vopper Courses</string>
-    <string name="author">Fernan Apps</string>
+    <string name="author">Vopper Academy</string>
 
     <string name="courses">Courses</string>
     <string name="profile">Profile</string>
@@ -12,5 +12,15 @@
     <string name="chapter">Chapter</string>
     <string name="chapters">Chapters</string>
     <string name="soon">Soon</string>
+
+    <string name="whats_your_name">What is your name?</string>
+    <string name="value_empty">Value is empty</string>
+    <string name="value_short">Value is short</string>
+
+
+
+
+
+
 
 </resources>

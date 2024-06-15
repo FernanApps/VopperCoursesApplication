@@ -2,11 +2,13 @@ package presentation.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import domain.model.Chapter
 import domain.model.Course
 import domain.use_cases.GetChaptersUseCase
 import domain.use_cases.GetChaptersWithPercentageUseCase
 import domain.use_cases.GetCoursesUseCase
+import domain.use_cases.GetUserNameUseCase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
@@ -20,10 +22,13 @@ import kotlinx.coroutines.launch
 class CoursesViewModel(
     private val getCoursesUseCase: GetCoursesUseCase,
     private val getChaptersUseCase: GetChaptersUseCase,
-    private val getChaptersWithPercentageUseCase: GetChaptersWithPercentageUseCase
+    private val getChaptersWithPercentageUseCase: GetChaptersWithPercentageUseCase,
+    private val getUserNameUseCase: GetUserNameUseCase
 
 ) : ViewModel() {
 
+    private val _userName = MutableStateFlow("")
+    val userName = _userName.asStateFlow()
 
     private val _courses = MutableStateFlow(emptyList<Course>())
 
@@ -47,6 +52,11 @@ class CoursesViewModel(
         getCourses()
     }
 
+    fun getUserName(){
+        viewModelScope.launch {
+            _userName.value = getUserNameUseCase()
+        }
+    }
 
     private fun getCourses() {
         viewModelScope.launch {

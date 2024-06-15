@@ -23,6 +23,7 @@ import presentation.screens.home.BottomNavigationBar
 import presentation.screens.home.ProfileView
 import presentation.screens.home.ReelsView
 import presentation.screens.player.PlayerScreen
+import presentation.screens.splash.SplashScreen
 import presentation.videoTitleIdBundleKey
 import presentation.videoUrlBundleKey
 
@@ -68,7 +69,7 @@ fun NavHostMain(
     ) { innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = Screens.Courses(),
+            startDestination = Screens.Splash(),
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding),
@@ -97,6 +98,13 @@ fun NavHostMain(
                 )
             }
         ) {
+
+            composable(route = Screens.Splash()) {
+                SplashScreen {
+                    navController.navigate(Screens.Courses())
+                }
+            }
+
             composable(route = Screens.Courses()) { backStackEntry ->
                 CoursesScreen(viewModel = viewModel, onNavigate = {
                     navController.navigate(Screens.CourseDetails.withArgs(it))

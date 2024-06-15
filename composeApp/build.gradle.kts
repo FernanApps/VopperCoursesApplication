@@ -41,6 +41,8 @@ kotlin {
 
             implementation(libs.koin.android)
             implementation(libs.koin.androidx.compose)
+            api(libs.androidx.startup)
+
         }
 
         commonMain.dependencies {
@@ -69,6 +71,8 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
 
             // in local utils implementation(libs.kase64)
+            implementation(libs.datastore.core)
+            implementation(libs.datastore.preferences)
 
             implementation(project(":player"))
 

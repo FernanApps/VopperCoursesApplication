@@ -28,6 +28,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -51,9 +52,13 @@ import voppercourses.composeapp.generated.resources.hello
 @Composable
 fun CoursesScreen(onNavigate: (keyCourse: String) -> Unit, viewModel: CoursesViewModel) {
 
+    val userName by viewModel.userName.collectAsState()
     val courses by viewModel.courses.collectAsState()
     val searchText by viewModel.searchText.collectAsState()
 
+    LaunchedEffect(true){
+        viewModel.getUserName()
+    }
 
     Column(
         modifier = Modifier.fillMaxSize().padding(20.dp),
@@ -62,7 +67,7 @@ fun CoursesScreen(onNavigate: (keyCourse: String) -> Unit, viewModel: CoursesVie
     ) {
         Text(stringResource(Res.string.hello), style = MaterialTheme.typography.titleSmall)
         Text(
-            "Fernan Apps",
+            userName,
             style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
         )
 

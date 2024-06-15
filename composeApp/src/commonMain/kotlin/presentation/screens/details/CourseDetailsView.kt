@@ -80,7 +80,7 @@ fun CourseDetailsView(
         //horizontalAlignment = Alignment.CenterHorizontally,
         //verticalArrangement = Arrangement.Center
     ) {
-        IconButtonBack(onBack)
+        IconButtonBack(onBack = onBack)
         Spacer(Modifier.size(10.dp))
         Text(
             if (chapters.isEmpty()) "" else stringResource(Res.string.chapters) + " : ${chapters.size}",
