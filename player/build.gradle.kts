@@ -81,6 +81,9 @@ kotlin {
             api(libs.sqlite.bundled)
             api(libs.sqlite)
 
+            // optional - Compose Multiplatform Resources Decoder
+            implementation("io.coil-kt:coil-compose:2.6.0")
+
 
         }
         desktopMain.dependencies {

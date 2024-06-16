@@ -5,9 +5,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import uk.co.caprica.vlcj.factory.MediaPlayerFactory
 import uk.co.caprica.vlcj.player.base.MediaPlayer
 import uk.co.caprica.vlcj.player.base.MediaPlayerEventAdapter
+import uk.co.caprica.vlcj.player.base.SnapshotApi
 import uk.co.caprica.vlcj.player.component.CallbackMediaPlayerComponent
 import uk.co.caprica.vlcj.player.component.EmbeddedMediaPlayerComponent
 import uk.co.caprica.vlcj.player.component.MediaPlayerComponent
+import java.io.File
 import java.util.Locale
 /*
 
@@ -36,6 +38,7 @@ val mediaPlayerFactory = remember { MediaPlayerFactory(PLAYER_ARGS) }
 actual class XVideoPlayer(
     component: MediaPlayerComponent
 ) {
+
     val player get() = _player
     private val _player = component.mediaPlayer()
 
@@ -62,6 +65,7 @@ actual class XVideoPlayer(
     private val _isRepeated = MutableStateFlow(false)
     actual val isRepeated: Flow<Boolean>
         get() = _isRepeated
+
 
     private val eventAdapter = object : MediaPlayerEventAdapter() {
         override fun buffering(mediaPlayer: MediaPlayer?, newCache: Float) {
@@ -171,6 +175,10 @@ actual class XVideoPlayer(
     actual fun setRepeat(isRepeat: Boolean) {
         _player.controls().repeat = isRepeat
         _isRepeated.value = isRepeat
+    }
+
+    actual fun snapshot(pathFile: String){
+        _player.snapshots().save(File(pathFile))
     }
 
     private fun Float.toVLCVolume() = (this * 200).toInt()

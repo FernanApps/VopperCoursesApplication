@@ -12,6 +12,8 @@ public expect class XVideoPlayer {
     fun pause()
     fun stop()
     fun release()
+
+    fun snapshot(pathFile: String)
     fun seekTo(position: Long)
     fun setMute(mute: Boolean)
     fun setVolume(volume: Float)

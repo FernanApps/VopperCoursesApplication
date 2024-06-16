@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -13,12 +12,9 @@ import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.FastForward
 import androidx.compose.material.icons.rounded.Pause
 import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,15 +28,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 
 @Composable
@@ -48,7 +43,13 @@ expect fun VideoPlayer(modifier: Modifier, url: String)
 
 // Other Examples https://github.com/rjuszczyk/ComposeVideoPlayer
 @Composable
-fun VideoPlayer2(modifier: Modifier, title: String, url: String, onBack: () -> Unit) {
+fun VideoPlayer2(
+    modifier: Modifier,
+    title: String,
+    url: String,
+    snapshotDirectory: () -> String = { "" },
+    onBack: () -> Unit
+) {
     val (player, videoLayout, repository) = rememberVideoPlayerState()
 
 
@@ -78,8 +79,19 @@ fun VideoPlayer2(modifier: Modifier, title: String, url: String, onBack: () -> U
             prepare(url)
         }
         onDispose {
+            if (snapshotDirectory().isNotEmpty()) {
+                val snapshotName = repository.createSnapshotName(title)
+                println("Snapshot in ${snapshotDirectory()}$snapshotName")
+                runBlocking {
+                    player.snapshot(snapshotDirectory() + snapshotName)
+                }
+            }
             coroutineScope.launch(Dispatchers.IO) {
-                repository.insertWatchProgress(title = title, position = currentTime, duration = duration)
+                repository.insertWatchProgress(
+                    title = title,
+                    position = currentTime,
+                    duration = duration
+                )
             }
             player.release()
         }
@@ -193,7 +205,7 @@ fun VideoPlayer2(modifier: Modifier, title: String, url: String, onBack: () -> U
                 Slider(
                     value = currentTime.toFloat(),
                     enabled = duration > 0,
-                    valueRange = 0f..(if(duration > 0) duration.toFloat() else 1F),
+                    valueRange = 0f..(if (duration > 0) duration.toFloat() else 1F),
                     onValueChange = {
                         player.seekTo(it.toLong())
                     },

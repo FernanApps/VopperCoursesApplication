@@ -30,5 +30,19 @@ class WatchProgressRepository(private val watchDatabase: WatchDatabase) {
     fun getAllWatchProgressAsFlow() = watchProgressDao.getAllWatchProgressAsFlow()
 
 
-    fun createMediaId(data: String) = data.replace(" ", "")
+    fun createMediaId(data: String) = sanitize(data.replace(" ", ""))
+
+    fun createSnapshotName(name: String) = createMediaId(name) + ".jpg"
+    private fun sanitize(fileName: String, replacementChar: Char = '_'): String {
+        val invalidChars = listOf('\\', '/', ':', '*', '?', '"', '<', '>', '|', '\u0000')
+
+        var sanitizedFileName = fileName.map {
+            if (it in invalidChars) replacementChar else it
+        }.joinToString("")
+
+        while (sanitizedFileName.endsWith(" ") || sanitizedFileName.endsWith(".")) {
+            sanitizedFileName = sanitizedFileName.dropLast(1)
+        }
+        return sanitizedFileName
+    }
 }
