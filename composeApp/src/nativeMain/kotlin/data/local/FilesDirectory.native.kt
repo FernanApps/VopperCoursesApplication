@@ -11,5 +11,5 @@ actual val directoryPath: String
         /*if (!appDirectory.exists()) {
             appDirectory.mkdirs()
         }*/
-        return appDirectory
+        return appDirectory + "/"
     }

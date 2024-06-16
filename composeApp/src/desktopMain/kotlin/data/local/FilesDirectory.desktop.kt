@@ -10,5 +10,5 @@ actual val directoryPath: String
         if (!appDirectory.exists()) {
             appDirectory.mkdirs()
         }
-        return appDirectory.absolutePath
+        return appDirectory.absolutePath + File.separator
     }
