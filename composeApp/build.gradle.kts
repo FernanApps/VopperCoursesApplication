@@ -55,7 +55,7 @@ kotlin {
             implementation(compose.components.uiToolingPreview)
 
             implementation(libs.lifecycle.viewmodel)
-            implementation(libs.navigation.compose)
+            api(libs.navigation.compose)
 
             implementation(libs.material.kolor)
 
@@ -73,6 +73,16 @@ kotlin {
             // in local utils implementation(libs.kase64)
             implementation(libs.datastore.core)
             implementation(libs.datastore.preferences)
+
+            //implementation(libs.ktor.core)
+            /*implementation(libs.coil.compose.core)
+            implementation(libs.coil.compose)
+            implementation(libs.coil.mp)
+            implementation(libs.coil.network.ktor)
+
+
+             */
+            implementation("org.jetbrains.androidx.core:core-bundle:1.0.0")
 
             implementation(project(":player"))
 
@@ -128,9 +138,11 @@ compose.desktop {
     application {
         mainClass = "MainKt"
 
+
         buildTypes.release.proguard {
             configurationFiles.from(files("compose-desktop.pro"))
         }
+        
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "vopper.academy.courses"

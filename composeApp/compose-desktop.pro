@@ -3,6 +3,11 @@
 -keep class androidx.compose.material3.** { *; }
 -ignorewarnings
 
+-keep class android.os.Looper {
+    *;
+}
+
+
 # Keep the Screens class and its members
 -keep class presentation.Screens {
     *;

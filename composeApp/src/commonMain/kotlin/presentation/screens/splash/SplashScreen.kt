@@ -1,6 +1,8 @@
 package presentation.screens.splash
 
 import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -14,12 +16,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -27,6 +26,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,7 +39,6 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.style.TextAlign
@@ -54,13 +53,15 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
 import presentation.components.IconButtonBack
+import presentation.theme.LocalWindowSizeWidth
+import presentation.theme.WindowSize
 import presentation.theme.subTitleTextStyle
 import presentation.theme.verticalBackground
 import voppercourses.composeapp.generated.resources.Res
 import voppercourses.composeapp.generated.resources.app_name
 import voppercourses.composeapp.generated.resources.author
-import voppercourses.composeapp.generated.resources.value_empty
 import voppercourses.composeapp.generated.resources.logo
+import voppercourses.composeapp.generated.resources.value_empty
 import voppercourses.composeapp.generated.resources.value_short
 import voppercourses.composeapp.generated.resources.whats_your_name
 
@@ -132,12 +133,22 @@ fun SplashScreenContentYourName(
         Text(stringResource(Res.string.whats_your_name))
         Spacer(Modifier.size(5.dp))
 
+
+        val weight = if(LocalWindowSizeWidth.current == WindowSize.Compact){
+            0.5f
+        } else {
+            1f
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Spacer(Modifier.weight(1f))
+
+
+
+            Spacer(Modifier.weight(weight))
             OutlinedTextField(
                 value = userName,
                 onValueChange = {
@@ -167,7 +178,7 @@ fun SplashScreenContentYourName(
                     }
                 },
             )
-            Spacer(Modifier.weight(1f))
+            Spacer(Modifier.weight(weight))
 
         }
         IconButtonBack(
@@ -206,6 +217,40 @@ fun SplashScreenContentInitial(modifier: Modifier = Modifier, onNavigate: () -> 
         delay(3000L)
         onNavigate()
     }
+
+
+
+    var weightValue by remember { mutableStateOf(1f) }
+
+    val weight by animateFloatAsState(
+        targetValue = weightValue,
+        tween(
+            durationMillis = 1000,
+            delayMillis = 200,
+            easing = LinearOutSlowInEasing
+        )
+    )
+    var weightValueCount by remember { mutableStateOf(0.1f) }
+    val coroutineScope = rememberCoroutineScope()
+    DisposableEffect(true){
+        val stopJob = coroutineScope.launch {
+            while (true){
+                delay(400)
+                if(weightValue == 1f){
+                    val finalWeightValue = weightValue - weightValueCount
+                    weightValue = maxOf(0.1f, finalWeightValue)
+                    weightValueCount += 0.1f
+                } else {
+                    weightValue = 1f
+                }
+            }
+        }
+        onDispose {
+            stopJob.cancel()
+        }
+    }
+
+
 
 
     Column(
@@ -251,10 +296,10 @@ fun SplashScreenContentInitial(modifier: Modifier = Modifier, onNavigate: () -> 
         )
         Spacer(Modifier.weight(1f))
 
-        Row(Modifier.fillMaxWidth()) {
+        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.Center) {
             Spacer(Modifier.weight(1f))
             Box(
-                modifier = Modifier.height(5.dp).weight(1f)
+                modifier = Modifier.height(5.dp).weight(weight)
                     .background(MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(5.dp))
             )
             Spacer(Modifier.weight(1f))
