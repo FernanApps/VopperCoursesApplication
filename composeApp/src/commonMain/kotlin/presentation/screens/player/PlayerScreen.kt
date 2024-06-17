@@ -11,14 +11,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import data.local.directoryPath
 import presentation.components.IconButtonBack
 
 
 @Composable
 fun PlayerScreen(videoUrl: String, title: String, onBack: () -> Unit) {
 
+    val baseAppDirectory = directoryPath
     VideoPlayer2(
         modifier = Modifier.fillMaxWidth(),
+        snapshotDirectory = {
+            baseAppDirectory
+        },
         title = title,
         url = videoUrl,
         onBack = onBack
