@@ -2,8 +2,7 @@ package di
 
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
-import data.local.AppPreferencesRepositoryImpl
-import data.local.WatchProgressDao
+import data.local.AppPreferencesRepositoryImp
 import data.local.WatchProgressRepository
 import data.local.datastore.createDataStore
 import data.remote.CourseRepositoryImp
@@ -36,7 +35,7 @@ val appModule = module {
         createDataStore()
     }
     single<AppPreferencesRepository> {
-        AppPreferencesRepositoryImpl(get())
+        AppPreferencesRepositoryImp(get())
     }
 
     singleOf(::GetCoursesUseCase)

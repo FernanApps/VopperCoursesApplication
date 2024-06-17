@@ -9,4 +9,6 @@ data class Chapter(
     val soon: Boolean = false,
     // 0 - 100
     val percentageWatched: Int = 0,
-)
+){
+    val progress get() = if(percentageWatched == 0) 0f else percentageWatched / 100f
+}

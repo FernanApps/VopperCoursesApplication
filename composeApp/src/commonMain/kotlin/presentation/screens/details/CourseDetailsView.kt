@@ -17,19 +17,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,23 +31,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.materialkolor.ktx.lighten
 import domain.model.Chapter
-import koinViewModel
 import org.jetbrains.compose.resources.stringResource
-import org.jetbrains.compose.ui.tooling.preview.Preview
 import presentation.components.IconButtonBack
 import presentation.screens.CoursesViewModel
 import voppercourses.composeapp.generated.resources.Res
 import voppercourses.composeapp.generated.resources.chapter
 import voppercourses.composeapp.generated.resources.chapters
-import voppercourses.composeapp.generated.resources.hello
 import voppercourses.composeapp.generated.resources.soon
 
 @Composable
@@ -67,10 +54,10 @@ fun CourseDetailsView(
     val course by viewModel.currentCourse.collectAsState()
 
 
-    LaunchedEffect(keyCourse) {
+    LaunchedEffect(true) {
         viewModel.setCurrentCourse(keyCourse)
         viewModel.getChapters()
-        viewModel.updateChapterWithPercentage()
+        //viewModel.updateChapterWithPercentage()
 
     }
 
@@ -94,6 +81,8 @@ fun CourseDetailsView(
         if (chapters.isEmpty()) {
             CircularProgressIndicator()
         } else {
+            println("XXXX Updater ,,,,,,")
+
             LazyColumn {
                 items(chapters, key = {
                     keyCourse + it.index + it.percentageWatched
@@ -116,11 +105,7 @@ fun CourseDetailsView(
 fun ChapterItem(modifier: Modifier = Modifier, chapter: Chapter, onClick: (Chapter) -> Unit) {
 
     var progress by remember { mutableStateOf(0f) }
-
-
-    LaunchedEffect(key1 = true) {
-        progress = chapter.percentageWatched / 100f
-    }
+    println("Chapter progress ${chapter.index} $progress")
 
     val size by animateFloatAsState(
         targetValue = progress,
@@ -131,8 +116,19 @@ fun ChapterItem(modifier: Modifier = Modifier, chapter: Chapter, onClick: (Chapt
         )
     )
 
+    LaunchedEffect(true){
+        if(chapter.percentageWatched > 0){
+            progress = chapter.progress
+            println("chapter item progress xx $progress - $chapter")
+        }
+    }
+
+
     Column {
 
+        /*LinearProgressIndicator(
+            progress = { progress }, modifier = Modifier.fillMaxWidth(),
+        )*/
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -168,13 +164,15 @@ fun ChapterItem(modifier: Modifier = Modifier, chapter: Chapter, onClick: (Chapt
                         }
 
                     }
+
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(size)
                             .fillMaxHeight()
-                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.45f))
+                            .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.30f))
                             .animateContentSize()
                     )
+
                 }
 
             }

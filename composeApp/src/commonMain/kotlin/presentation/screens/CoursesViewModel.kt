@@ -2,7 +2,6 @@ package presentation.screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import domain.model.Chapter
 import domain.model.Course
 import domain.use_cases.GetChaptersUseCase
@@ -10,13 +9,9 @@ import domain.use_cases.GetChaptersWithPercentageUseCase
 import domain.use_cases.GetCoursesUseCase
 import domain.use_cases.GetUserNameUseCase
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class CoursesViewModel(
@@ -60,6 +55,7 @@ class CoursesViewModel(
 
     private fun getCourses() {
         viewModelScope.launch {
+            println("getCourses ??")
             _courses.value = getCoursesUseCase()
             _coursesFiltered.value = _courses.value
         }
@@ -80,25 +76,7 @@ class CoursesViewModel(
     private var jobUpdaterPercentage: Job? = null
 
 
-    fun updateChapterWithPercentage() {
-        if (_currentCourse.value != null) {
-            println("updateChapterWithPercentage")
-            jobUpdaterPercentage?.cancel()
-            jobUpdaterPercentage = viewModelScope.launch {
-                println("jobUpdaterPercentage viewModelScope launch")
 
-                getChaptersWithPercentageUseCase(
-                    titleCourse = _currentCourse.value!!.title,
-                    chapters = _chapters.value
-                ).collect {
-                    println("jobUpdaterPercentage collect $it")
-                    _chapters.value = it
-                }
-            }
-        }
-
-
-    }
 
     override fun onCleared() {
         super.onCleared()
@@ -107,18 +85,42 @@ class CoursesViewModel(
 
 
     fun getChapters() {
+        println("getChapters ??")
+
         if (_currentCourse.value != null) {
             viewModelScope.launch(Dispatchers.Unconfined) {
-                _chapters.value = getChaptersUseCase(
+                val chapters  = getChaptersUseCase(
                     keyCourse = _currentCourse.value!!.key,
                     enabled = _currentCourse.value!!.enabled,
                     total = _currentCourse.value!!.total
                 )
+                updateChapterWithPercentage(chapters)
 
             }
         } else {
             _chapters.value = emptyList()
         }
+
+    }
+
+    fun updateChapterWithPercentage(chapters: List<Chapter>) {
+        if (_currentCourse.value != null) {
+            println("updateChapterWithPercentage")
+            jobUpdaterPercentage?.cancel()
+            jobUpdaterPercentage = viewModelScope.launch {
+                println("jobUpdaterPercentage viewModelScope launch")
+
+                getChaptersWithPercentageUseCase(
+                    titleCourse = _currentCourse.value!!.title,
+                    chapters = chapters
+                ).collect {
+                    //println("jobUpdaterPercentage collect $it")
+                    _chapters.value = it
+                    println("XXx collect " + _chapters.value.filter { it.percentageWatched > 0 })
+                }
+            }
+        }
+
 
     }
 

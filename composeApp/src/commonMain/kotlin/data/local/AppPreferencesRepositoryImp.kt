@@ -6,7 +6,7 @@ import data.local.datastore.DataStoreManager
 import domain.repository.AppPreferencesRepository
 
 
-internal class AppPreferencesRepositoryImpl(
+internal class AppPreferencesRepositoryImp(
     dataStore: DataStore<Preferences>
 ) : DataStoreManager(dataStore), AppPreferencesRepository {
 
