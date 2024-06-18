@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
@@ -31,13 +32,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.DefaultAlpha
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.materialkolor.ktx.lighten
+import data.local.directoryPath
 import domain.model.Chapter
 import org.jetbrains.compose.resources.stringResource
+import org.jetbrains.skiko.hostOs
 import presentation.components.IconButtonBack
 import presentation.screens.CoursesViewModel
+import utils.PathUtils
 import voppercourses.composeapp.generated.resources.Res
 import voppercourses.composeapp.generated.resources.chapter
 import voppercourses.composeapp.generated.resources.chapters
@@ -87,7 +94,10 @@ fun CourseDetailsView(
                 items(chapters, key = {
                     keyCourse + it.index + it.percentageWatched
                 }) {
-                    ChapterItem(chapter = it, modifier = Modifier.padding(bottom = 5.dp)) { chapter ->
+                    ChapterItem(
+                        modifier = Modifier.padding(bottom = 5.dp),
+                        chapter = it,
+                    ) { chapter ->
                         val nameChapter = viewModel.createNameChapter(
                             title = course!!.title,
                             index = chapter.index
@@ -105,7 +115,6 @@ fun CourseDetailsView(
 fun ChapterItem(modifier: Modifier = Modifier, chapter: Chapter, onClick: (Chapter) -> Unit) {
 
     var progress by remember { mutableStateOf(0f) }
-    println("Chapter progress ${chapter.index} $progress")
 
     val size by animateFloatAsState(
         targetValue = progress,
@@ -116,10 +125,9 @@ fun ChapterItem(modifier: Modifier = Modifier, chapter: Chapter, onClick: (Chapt
         )
     )
 
-    LaunchedEffect(true){
-        if(chapter.percentageWatched > 0){
+    LaunchedEffect(true) {
+        if (chapter.percentageWatched > 0) {
             progress = chapter.progress
-            println("chapter item progress xx $progress - $chapter")
         }
     }
 
@@ -129,42 +137,17 @@ fun ChapterItem(modifier: Modifier = Modifier, chapter: Chapter, onClick: (Chapt
         /*LinearProgressIndicator(
             progress = { progress }, modifier = Modifier.fillMaxWidth(),
         )*/
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Card(modifier = modifier.fillMaxWidth().height(50.dp), onClick = {
-                if (!chapter.soon) onClick(chapter)
-            }) {
+            Card(
+                modifier = modifier.fillMaxWidth()
+                    .height(if (chapter.percentageWatched > 0) 180.dp else 50.dp), onClick = {
+                    if (!chapter.soon) onClick(chapter)
+                }) {
                 Box(Modifier.fillMaxSize()) {
-
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = stringResource(Res.string.chapter) + " [ " + chapter.index + " ] ",
-                            modifier = Modifier.padding(horizontal = 15.dp, vertical = 8.dp)
-                                .weight(1f)
-                        )
-                        if (chapter.soon) {
-                            Card(
-                                colors = CardDefaults.cardColors(
-                                    containerColor = MaterialTheme.colorScheme.primary.lighten(),
-                                    contentColor = MaterialTheme.colorScheme.background
-                                )
-                            ) {
-                                Text(
-                                    stringResource(Res.string.soon),
-                                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp)
-                                )
-                            }
-                            Spacer(Modifier.size(5.dp))
-
-                        }
-
-                    }
-
                     Box(
                         modifier = Modifier
                             .fillMaxWidth(size)
@@ -172,6 +155,72 @@ fun ChapterItem(modifier: Modifier = Modifier, chapter: Chapter, onClick: (Chapt
                             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.30f))
                             .animateContentSize()
                     )
+                    Column {
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = stringResource(Res.string.chapter) + " [ " + chapter.index + " ] ",
+                                modifier = Modifier.padding(horizontal = 15.dp, vertical = 8.dp)
+                                    .weight(1f)
+                            )
+                            if (chapter.soon) {
+                                Card(
+                                    colors = CardDefaults.cardColors(
+                                        containerColor = MaterialTheme.colorScheme.primary.lighten(),
+                                        contentColor = MaterialTheme.colorScheme.background
+                                    )
+                                ) {
+                                    Text(
+                                        stringResource(Res.string.soon),
+                                        modifier = Modifier.padding(
+                                            horizontal = 8.dp,
+                                            vertical = 4.dp
+                                        )
+                                    )
+                                }
+                                Spacer(Modifier.size(5.dp))
+
+                            }
+
+                        }
+                        if (chapter.percentageWatched > 0) {
+                            Card(
+                                modifier = Modifier.width(180.dp).fillMaxHeight().padding(start = 10.dp, bottom = 10.dp),
+                                colors = CardDefaults.cardColors(containerColor = Color.Transparent)
+                            ) {
+                                if (hostOs.isWindows) {
+                                    presentation.components.shared.AsyncImage(
+                                        modifier = Modifier.fillMaxSize(),
+                                        model = directoryPath + chapter.thumbnail,
+                                        contentDescription = "chapter index ${chapter.index}",
+                                        contentScale = ContentScale.Crop,
+                                        alignment = Alignment.TopCenter,
+                                        alpha = DefaultAlpha,
+                                        colorFilter = null
+                                    )
+
+                                } else {
+                                    coil3.compose.AsyncImage(
+                                        modifier = Modifier.fillMaxSize(),
+                                        model = PathUtils.fixImagePath(directoryPath + chapter.thumbnail),
+                                        contentDescription = "chapter index ${chapter.index}",
+                                        contentScale = ContentScale.Crop,
+                                        alignment = Alignment.TopCenter,
+                                        alpha = DefaultAlpha,
+                                        colorFilter = null
+                                    )
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+
 
                 }
 

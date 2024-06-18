@@ -4,7 +4,6 @@ import data.local.WatchProgressRepository
 import domain.model.Chapter
 import domain.repository.CourseRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.asFlow
 import kotlinx.coroutines.flow.map
 
 
@@ -25,13 +24,14 @@ class GetChaptersWithPercentageUseCase(private val watchProgressRepository: Watc
         return watched.map { watchedList ->
             chapters.map { chapter ->
                 val nameChapter = createNameChapter(titleCourse, chapter.index)
+                val thumbnail = watchProgressRepository.createSnapshotName(nameChapter)
                 val findWatched = watchedList.find { watched ->
                     watched.mediaId == watchProgressRepository.createMediaId(nameChapter)
                 }
                 if (findWatched == null) {
                     chapter
                 } else {
-                    chapter.copy(percentageWatched = findWatched.getProgressPercentage())
+                    chapter.copy(percentageWatched = findWatched.getProgressPercentage(), thumbnail = thumbnail)
                 }
             }
         }

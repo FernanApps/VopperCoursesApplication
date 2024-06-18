@@ -75,16 +75,16 @@ kotlin {
             implementation(libs.datastore.preferences)
 
             //implementation(libs.ktor.core)
-            /*implementation(libs.coil.compose.core)
+            implementation(libs.coil.compose.core)
             implementation(libs.coil.compose)
             implementation(libs.coil.mp)
             implementation(libs.coil.network.ktor)
 
 
-             */
-            implementation("org.jetbrains.androidx.core:core-bundle:1.0.0")
+            implementation(libs.core.bundle)
 
-            implementation(project(":player"))
+            implementation(projects.player)
+            //implementation(project(":player"))
 
         }
         desktopMain.dependencies {

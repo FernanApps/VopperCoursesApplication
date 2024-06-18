@@ -154,7 +154,13 @@ actual class XVideoPlayer(
         _isRepeated.value = isRepeat
     }
 
+    actual fun snapshot(pathFile: String){
+        //  _player.snapshots().save(File(pathFile))
+    }
+
     private fun emitDuration() {
         _duration.value = playerView?.player?.duration ?: 0
     }
+
+
 }
