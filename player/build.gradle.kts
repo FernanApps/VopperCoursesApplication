@@ -9,12 +9,18 @@ plugins {
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlinx.serialization)
 
+    alias(libs.plugins.ksp)
     alias(libs.plugins.room)
-    id("com.google.devtools.ksp")
+    //id("com.google.devtools.ksp")
 
 }
 
 kotlin {
+    
+    sourceSets.commonMain {
+        kotlin.srcDir("build/generated/ksp/metadata")
+    }
+
     androidTarget {
         @OptIn(ExperimentalKotlinGradlePluginApi::class)
         compilerOptions {
@@ -32,6 +38,14 @@ kotlin {
         iosTarget.binaries.framework {
             baseName = "ComposeApp"
             isStatic = true
+        }
+        iosTarget.compilations.getByName("main") {
+            cinterops {
+                val observer by creating {
+                    defFile(project.file("src/nativeInterop/cinterop/observer.def"))
+                    packageName("vopper.academy.courses")
+                }
+            }
         }
     }
     
@@ -79,10 +93,9 @@ kotlin {
 
             api(libs.androidx.room.runtime)
             api(libs.sqlite.bundled)
-            api(libs.sqlite)
+            //api(libs.sqlite)
 
             // optional - Compose Multiplatform Resources Decoder
-
 
         }
         desktopMain.dependencies {
@@ -136,6 +149,7 @@ android {
     dependencies {
         debugImplementation(compose.uiTooling)
     }
+
 }
 
 compose.desktop {
@@ -158,18 +172,44 @@ compose.resources {
 }
 */
 
+room {
+    schemaDirectory("$projectDir/schemas")
+}
+
+dependencies {
+    //ksp(libs.androidx.room.compiler)
+    add("kspCommonMainMetadata", libs.androidx.room.compiler)
+    afterEvaluate {
+        add("kspIosSimulatorArm64", libs.androidx.room.compiler)
+        add("kspIosX64", libs.androidx.room.compiler)
+        add("kspIosArm64", libs.androidx.room.compiler)
+    }
+
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.dsl.KotlinCompile<*>>().configureEach {
+    if (name != "kspCommonMainKotlinMetadata" ) {
+        dependsOn("kspCommonMainKotlinMetadata")
+    }
+}
+
+/*
 dependencies {
     add("kspCommonMainMetadata", libs.androidx.room.compiler)
     add("kspAndroid", libs.androidx.room.compiler)
     add("kspDesktop", libs.androidx.room.compiler)
     //add("kspJvmTest", libs.androidx.room.compiler)
 
+
+    /*
+        iosX64(),
+        iosArm64(),
+        iosSimulatorArm64()
+     */
     //add("kspIosSimulatorArm64", libs.androidx.room.compiler)
-    //add("kspIosX64", libs.androidx.room.compiler)
     //add("kspIosArm64", libs.androidx.room.compiler)
     //debugImplementation(libs.compose.ui.tooling)
 }
+*/
 
-room {
-    schemaDirectory("$projectDir/schemas")
-}
+

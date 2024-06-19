@@ -4,6 +4,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.interop.UIKitView
 import io.ktor.client.engine.darwin.*
 import kotlinx.cinterop.CValue
+import kotlinx.cinterop.ExperimentalForeignApi
 import org.koin.dsl.module
 import platform.AVFoundation.AVPlayer
 import platform.AVFoundation.AVPlayerLayer
@@ -15,6 +16,7 @@ import platform.QuartzCore.CATransaction
 import platform.QuartzCore.kCATransactionDisableActions
 import platform.UIKit.UIView
 
+@OptIn(ExperimentalForeignApi::class)
 @Composable
 actual fun VideoPlayer(modifier: Modifier, url: String) {
     val player = remember { AVPlayer(uRL = NSURL.URLWithString(url)!!) }
