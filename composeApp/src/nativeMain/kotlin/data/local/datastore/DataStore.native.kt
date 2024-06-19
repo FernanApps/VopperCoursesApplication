@@ -18,15 +18,23 @@ import platform.Foundation.NSUserDomainMask
 actual fun createDataStore(): DataStore<Preferences> {
     return runBlocking {
         getDataStore(producePath = {
+
+            /*
+            val documentDirectoryPath = directoryPath
+
             val documentDirectory: NSURL? = NSFileManager.defaultManager.URLForDirectory(
                 //directory = NSDocumentDirectory,
-                directory = directoryPath,
+                directory = documentDirectoryUrl,
                 inDomain = NSUserDomainMask,
                 appropriateForURL = null,
                 create = false,
                 error = null,
             )
-            requireNotNull(documentDirectory).path + "/$dataStoreFileName"
+            */
+            val dataStorePath = "$directoryPath/$dataStoreFileName"
+
+            //requireNotNull(documentDirectory).path + "/$dataStoreFileName"
+            dataStorePath
         })
     }
 }
