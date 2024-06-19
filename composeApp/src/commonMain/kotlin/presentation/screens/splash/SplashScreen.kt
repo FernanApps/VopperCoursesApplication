@@ -19,6 +19,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -48,6 +51,7 @@ import domain.repository.AppPreferencesRepository
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.stringResource
@@ -57,19 +61,25 @@ import presentation.theme.LocalWindowSizeWidth
 import presentation.theme.WindowSize
 import presentation.theme.subTitleTextStyle
 import presentation.theme.verticalBackground
+import utils.Application
+import utils.checkAppInstalls
+import utils.openUrl
 import voppercourses.composeapp.generated.resources.Res
 import voppercourses.composeapp.generated.resources.app_name
 import voppercourses.composeapp.generated.resources.author
+import voppercourses.composeapp.generated.resources.download
 import voppercourses.composeapp.generated.resources.logo
 import voppercourses.composeapp.generated.resources.value_empty
 import voppercourses.composeapp.generated.resources.value_short
 import voppercourses.composeapp.generated.resources.whats_your_name
+import voppercourses.composeapp.generated.resources.retry
 
 
 @Composable
 fun SplashScreen(onNavigate: () -> Unit) {
     var userName by remember { mutableStateOf("") }
     var isFinishSplash by remember { mutableStateOf(false) }
+    var checkAppsMandatory by remember { mutableStateOf(false) }
 
     val appPreferencesRepository = koinInject<AppPreferencesRepository>()
     val coroutineScope = rememberCoroutineScope()
@@ -78,21 +88,95 @@ fun SplashScreen(onNavigate: () -> Unit) {
         userName = appPreferencesRepository.getUserName()
     }
 
-    if (!isFinishSplash) {
+
+    if (checkAppsMandatory) {
+        SplashScreenContentCheckAppsMandatory(
+            Modifier.fillMaxSize().background(verticalBackground),
+            onNavigate
+        )
+
+    } else if (!isFinishSplash) {
         SplashScreenContentInitial(Modifier.fillMaxSize().background(verticalBackground)) {
             isFinishSplash = true
         }
+
     } else {
         if (userName.isEmpty()) {
-            SplashScreenContentYourName(Modifier.fillMaxSize().background(verticalBackground)) { userNameInput ->
+            SplashScreenContentYourName(
+                Modifier.fillMaxSize().background(verticalBackground)
+            ) { userNameInput ->
                 coroutineScope.launch {
                     appPreferencesRepository.addUserName(userNameInput)
-                    onNavigate()
+                    checkAppsMandatory = true
                 }
             }
         } else {
-            onNavigate()
+            checkAppsMandatory = true
         }
+    }
+
+
+}
+
+
+@Composable
+fun SplashScreenContentCheckAppsMandatory(
+    modifier: Modifier = Modifier,
+    onNavigate: () -> Unit
+) {
+    var application: Application? by remember { mutableStateOf(null) }
+    var isCheck: Boolean by remember { mutableStateOf(false) }
+
+    val rememberScope = rememberCoroutineScope()
+
+    LaunchedEffect(true) {
+        application = runBlocking {
+            checkAppInstalls()
+        }
+        isCheck = true
+    }
+
+    if (isCheck && application == null) {
+        //
+        onNavigate()
+    }
+
+    Box(modifier, contentAlignment = Alignment.Center) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            if (application == null) {
+                CircularProgressIndicator()
+            } else {
+                Text(application!!.information)
+                Spacer(Modifier.size(10.dp))
+                Button(
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error),
+                    onClick = {
+                        openUrl(application!!.openUrl)
+                    }
+                ) {
+                    Text(stringResource(Res.string.download))
+                }
+
+                Spacer(Modifier.size(5.dp))
+                Button(onClick = {
+
+                    rememberScope.launch {
+                        isCheck = false
+                        application = runBlocking {
+                            checkAppInstalls()
+                        }
+                        isCheck = true
+                    }
+
+                }) {
+                    Text(stringResource(Res.string.retry))
+                }
+            }
+        }
+
     }
 
 
@@ -134,7 +218,7 @@ fun SplashScreenContentYourName(
         Spacer(Modifier.size(5.dp))
 
 
-        val weight = if(LocalWindowSizeWidth.current == WindowSize.Compact){
+        val weight = if (LocalWindowSizeWidth.current == WindowSize.Compact) {
             0.5f
         } else {
             1f
@@ -145,7 +229,6 @@ fun SplashScreenContentYourName(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
 
 
             Spacer(Modifier.weight(weight))
@@ -219,7 +302,6 @@ fun SplashScreenContentInitial(modifier: Modifier = Modifier, onNavigate: () -> 
     }
 
 
-
     var weightValue by remember { mutableStateOf(1f) }
 
     val weight by animateFloatAsState(
@@ -232,11 +314,11 @@ fun SplashScreenContentInitial(modifier: Modifier = Modifier, onNavigate: () -> 
     )
     var weightValueCount by remember { mutableStateOf(0.1f) }
     val coroutineScope = rememberCoroutineScope()
-    DisposableEffect(true){
+    DisposableEffect(true) {
         val stopJob = coroutineScope.launch {
-            while (true){
+            while (true) {
                 delay(400)
-                if(weightValue == 1f){
+                if (weightValue == 1f) {
                     val finalWeightValue = weightValue - weightValueCount
                     weightValue = maxOf(0.1f, finalWeightValue)
                     weightValueCount += 0.1f
